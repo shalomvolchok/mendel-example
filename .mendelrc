@@ -1,0 +1,220 @@
+base-config:
+  id: base # Bundle id for default variation
+  dir: ./isomorphic/base # Source dir for default variation
+  outdir: ./build # Base output dir for all artifacts
+
+variation-config:
+  variation-dirs:
+    - ./isomorphic/variations
+  # dir names should be unique across all roots or Mendel throws
+  variations:
+    unexisting_folder:
+    bucket_A:
+      - unexisting_folder
+    feature_B:
+    partner_C:
+    bucket_D:
+      - partner_C
+
+route-config: # Mendel-middleware related
+  variation: /mendel/:variations/:bundle # Route pattern for variational assets during development
+  hash: /mendel/:hash/:bundle # Route pattern for variational assets during production
+
+transforms: # a list of all available transforms for all envs and types
+  babel: # id or reference of a plugin instance
+    plugin: mendel-transform-babel # name of mendel-transform-* package: plugin must be installed in your project
+    options: # Configuration object passed to a plugin instance.
+      # Please refer to mendel-transform-babel documentation for its config
+      presets:
+        - es2015
+        - react
+  babel-min: # Example configuration for Babel + some minification
+    plugin: mendel-transform-babel
+    options:
+      comments: false # true - Output comments in generated output.
+      compact: true # true - Do not include superfluous whitespace characters and line terminators
+      presets:
+        -
+          - es2015
+          -
+            loose: true # Note "babel-preset-es2015-loose" is incompatible with mendel
+        - react
+  json-parse: # Parsing JSON files to be evaluatable in JS
+    plugin: mendel-parser-json
+  less-transform:
+    plugin: mendel-transform-less
+  babel-test:
+    plugin: mendel-transform-babel
+    options:
+      presets:
+        - es2015
+        - react
+      plugins:
+        - istanbul
+
+types: # Type declaration of entries to be transformed or parsed
+  json: # Type id. Can be any arbitrary name, not file extension
+    extensions: # Can use `glob` or `extensions`
+      - .json
+    parser: json-parse # Parser is a special type of transform that runs after all transforms in this type (if declared)
+        # that allows an entry to be regarded as a destination type to be declared below.
+    parser-to-type: js # Defines type conversion: json -> js after running the parser
+    # Type, by default, excludes `node_modules` but below configuration allows override
+    # By default, the configuration is off.
+    include-node_modules: true
+  js:
+    transforms:
+      - babel
+    glob:
+      - "**/*.{js,jsx}"
+      - "!**/_test_/*" # "!" is an exclusion notation in minimatch
+  jstest:
+    transforms:
+      - babel
+    glob:
+      # Test files themselves should not be be instrumented.
+      - "**/_test_/*"
+  less:
+    extensions:
+      - .less
+    parser: less-transform
+    parser-to-type: css
+    resource: true # Resources are filtered from executables list (#getExecutableEntries in MendelOutletRegistry)
+  css:
+    extensions:
+      - .css
+    resource: true
+
+# Generator = Bundle former. Can use plugins like code-splitter.
+# ! Important: order is relevant !
+# Scenarios:
+# 1. if extract-bundles comes first, some node_modules that
+#     only lazy bundle needs will be part of the lazy bundle
+# 2. if node-modules first, extract-bundles will operate on source files only
+#     because all node_modules are extracted by node-modules generators
+generators:
+  - id: extract-bundles
+    plugin: mendel-generator-extract
+  - id: node-modules-generator
+    plugin: mendel-generator-node-modules
+
+outlets: # Outlet: defines methods of outputting bundles
+  - id: manifest
+    plugin: mendel-outlet-manifest # Mendel v1 compatible serialization of a bundle
+  - id: css
+    plugin: mendel-outlet-css # PostCSS-based css output
+    options:
+      plugin:
+        -
+          - autoprefixer
+          -
+            browsers: "last 2 versions"
+  - id: css-rtl
+    plugin: mendel-outlet-css
+    options:
+      plugin:
+        -
+          - autoprefixer
+          -
+            browsers: "last 2 versions"
+        - rtlcss
+  - id: browser-pack
+    plugin: mendel-outlet-browser-pack # Outputs stream compatible JS bundles
+  - id: ssr
+    plugin: mendel-outlet-server-side-render # Outputs artifacts for server side render
+    options:
+      dir: server
+      requireTransform: true
+      includeNodeModules: false # default false
+
+bundles: # Definition of a bundle
+  main:
+    outlet: browser-pack
+    outfile: main.js
+    entries:
+      - ./main.js
+  lazy:
+    outlet: browser-pack
+    outfile: lazy.js
+    generator: extract-bundles
+    from: main # Bundle Id. Extracts these entries from main bundle
+    entries:
+      - ./components/lazy.js
+  vendor:
+    outlet: browser-pack
+    outfile: vendor.js
+    generator: node-modules-generator
+    from:
+      - main # have array of bundleId or keyword "all"
+      - lazy
+    entries:
+      # This file either has to be part of dependency graph or source
+      # or it has to be part of a variation's source folder.
+      # Otherwise, it is not added to Mendel at all.
+      - ./vendor/large-code.js
+
+  css:
+    outlet: css
+    outfile: main.css # File gets written to ${outdir}/main.css
+    entries:
+      - "**/*.css"
+      - "**/*.less"
+      - "!css/reset.css"
+  css-rtl:
+    outlet: css-rtl
+    outfile: main-rtl.css
+    entries:
+      - "**/*.css"
+      - "**/*.less"
+      - "!css/reset.css"
+
+env:
+  test:
+    # test/setup/*.js are used only in test environment.
+    # Since they may pull in large test-related dependency in test environment,
+    # otherwise useless, Mendel supports "support" configuration.
+    support: test/**/*.js
+    types:
+      js:
+        transforms:
+          - babel-test
+        glob:
+          - "**/*.{js,jsx}"
+          - "!**/_test_/*"
+  production:
+    types:
+      js:
+        transforms:
+          - babel-min # Transform "js" type in this environment
+
+    postgenerators:
+      - id: prune
+        plugin: mendel-generator-prune
+        groups:
+          -
+            # Regard below bundles as one
+            # and do necessary clean ups
+            - main
+            - lazy
+            - vendor
+
+    bundles:
+      main:
+        outlet: manifest
+        manifest: main.manifest.json
+      vendor:
+        outlet: manifest
+        manifest: vendor.manifest.json
+      lazy:
+        outlet: manifest
+        manifest: lazy.manifest.json
+      server:
+        outlet: ssr
+        manifest: ssr.manifest.json
+        # Following options are used in creating bundle
+        outfile: server.js
+        entries:
+          - ./main.js
+        # If npm package has multiple entry files, this pulls only
+        # server side entry file defined in "main" field of package.json
+        runtime: main
