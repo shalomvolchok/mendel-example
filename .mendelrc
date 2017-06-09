@@ -8,13 +8,13 @@ variation-config:
     - ./isomorphic/variations
   # dir names should be unique across all roots or Mendel throws
   variations:
-    unexisting_folder:
-    bucket_A:
-      - unexisting_folder
-    feature_B:
-    partner_C:
-    bucket_D:
-      - partner_C
+    #unexisting_folder:
+    #bucket_A:
+    #  - unexisting_folder
+    #feature_B:
+    #partner_C:
+    #bucket_D:
+    #  - partner_C
 
 route-config: # Mendel-middleware related
   variation: /mendel/:variations/:bundle # Route pattern for variational assets during development
