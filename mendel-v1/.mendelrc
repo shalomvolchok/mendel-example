@@ -10,3 +10,17 @@ bundles:
       - ./app/src/base/App.js
     transform:
       - babelify
+
+env:
+  production:
+    manifestProcessors:
+      -
+        - mendel-manifest-uglify
+    bundles:
+      main:
+        transform:
+          - babelify
+          -
+            - envify
+            - global: true
+              NODE_ENV: production

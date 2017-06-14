@@ -7,7 +7,7 @@
     "babel-server": "babel app/src/server --out-dir app/build",
     "mendel": "mendel -v",
     "build-dev": "npm run babel-server",
-    "build": "mendel && npm run babel-server",
+    "build": "NODE_ENV=production mendel && npm run babel-server",
     "development": "nodemon app/build/server.js",
     "production": "NODE_ENV=production node app/build/server.js"
   },
@@ -29,9 +29,11 @@
     "babel-preset-react": "^6.5.0",
     "babel-runtime": "^6.6.1",
     "babelify": "^7.3.0",
+    "envify": "^4.0.0",
     "mendel": "1.3.2",
     "mendel-development-middleware": "2.1.1",
     "mendel-manifest-extract-bundles": "1.1.1",
+    "mendel-manifest-uglify": "^3.0.2",
     "nodemon": "^1.9.2"
   },
   "babel": {
