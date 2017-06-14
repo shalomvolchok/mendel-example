@@ -1,0 +1,12 @@
+outdir: ./app/build
+bundlesoutdir: client
+serveroutdir: server
+
+base: base
+basetree: app/src/base
+bundles:
+  main:
+    entries:
+      - ./app/src/base/App.js
+    transform:
+      - babelify

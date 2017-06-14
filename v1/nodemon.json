@@ -1,0 +1,4 @@
+{
+  "ignore": ["build/"],
+  "watch": ["*.js","*.json", ".mendelrc"]
+}

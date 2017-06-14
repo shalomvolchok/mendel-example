@@ -1,0 +1,37 @@
+{
+  "presets": [
+    "react",
+    ["env", {
+      "targets": {
+        "browsers": ["last 2 versions", "safari >= 7"]
+      },
+      "modules": false,
+      "loose": true,
+      "useBuiltIns": true
+    }],
+    "stage-3"
+  ],
+  "plugins": [
+    "syntax-dynamic-import",
+    "transform-runtime",
+    "transform-class-properties",
+    "lodash"
+  ],
+
+  "env": {
+    "production": {
+        "passPerPreset": true,
+        "presets": [
+            "react-optimize",
+          "react",
+          "es2015",
+          "stage-0"
+        ],
+        "plugins": [
+          "transform-runtime",
+          "babel-plugin-transform-runtime",
+          "babel-plugin-add-module-exports",
+        ]
+    }
+  }
+}

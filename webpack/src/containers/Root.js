@@ -1,11 +1,7 @@
-/* Copyright 2015, Yahoo Inc.
-   Copyrights licensed under the MIT License.
-   See the accompanying LICENSE file for terms. */
-
 import React from "react";
 import { InstantSearch, Hits, SearchBox } from "react-instantsearch/dom";
 
-class Lazy extends React.Component {
+class Root extends React.Component {
     render() {
         return (
             <InstantSearch
@@ -20,4 +16,4 @@ class Lazy extends React.Component {
     }
 }
 
-export default Lazy;
+export default Root;
