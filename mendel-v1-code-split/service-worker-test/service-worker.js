@@ -88,19 +88,19 @@ var createCacheKey = function(
     // Create a new URL object to avoid modifying originalUrl.
     var url = new URL(originalUrl);
 
+    // this cache busting seems to mess with mendel bundle serving
     // If dontCacheBustUrlsMatching is not set, or if we don't have a match,
     // then add in the extra cache-busting URL parameter.
-    if (
-        !dontCacheBustUrlsMatching ||
-        !url.pathname.match(dontCacheBustUrlsMatching)
-    ) {
-        url.search +=
-            (url.search ? "&" : "") +
-            encodeURIComponent(paramName) +
-            "=" +
-            encodeURIComponent(paramValue);
-    }
-
+    // if (
+    //     !dontCacheBustUrlsMatching ||
+    //     !url.pathname.match(dontCacheBustUrlsMatching)
+    // ) {
+    //     url.search +=
+    //         (url.search ? "&" : "") +
+    //         encodeURIComponent(paramName) +
+    //         "=" +
+    //         encodeURIComponent(paramValue);
+    // }
     return url.toString();
 };
 

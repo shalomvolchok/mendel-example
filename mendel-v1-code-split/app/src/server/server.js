@@ -21,19 +21,10 @@ app.use(MendelMiddleware());
 
 app.get("/service-worker.js", (req, res, next) => {
     res.set("Content-Type", "application/javascript");
-    next();
-});
-
-app.get("/service-worker.js", (req, res, next) => {
-    req.mendel.setVariations([]);
-    res.set("Content-Type", "application/javascript");
-    const assets = [`"${req.mendel.getURL("lazy").substr(1)}"`];
-    const sw = ``;
     var contents = fs.readFileSync(
         path.join(__dirname, "../../service-worker-test/service-worker.js"),
         "utf8"
     );
-
     res.send(contents);
     res.end();
 });
