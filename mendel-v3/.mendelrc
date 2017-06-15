@@ -36,10 +36,6 @@ transforms: # a list of all available transforms for all envs and types
           -
             loose: true # Note "babel-preset-es2015-loose" is incompatible with mendel
         - react
-        -
-          - lodash
-          - minimize: true,
-            debug: false
   json-parse: # Parsing JSON files to be evaluatable in JS
     plugin: mendel-parser-json
   less-transform:

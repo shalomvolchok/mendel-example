@@ -1,7 +1,6 @@
 const webpack = require("webpack");
 const path = require("path");
 const merge = require("webpack-merge");
-const BabiliPlugin = require("babili-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 
 module.exports = merge(require("./webpack.config"), {
@@ -13,11 +12,6 @@ module.exports = merge(require("./webpack.config"), {
     },
 
     plugins: [
-        // new BabiliPlugin({
-        //     test: /\.js?$/,
-        //     sourceMap: true
-        // }),
-
         new webpack.LoaderOptionsPlugin({
             minimize: true,
             debug: false

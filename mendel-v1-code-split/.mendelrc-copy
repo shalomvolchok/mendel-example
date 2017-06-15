@@ -1,0 +1,50 @@
+outdir: ./app/build
+bundlesoutdir: client
+serveroutdir: server
+
+base: base
+basetree: app/src/base
+bundles:
+  main:
+    entries:
+      - ./app/src/base/App.js
+    external:
+      - ./app/src/base/containers/Search.js
+    transform:
+      - babelify
+  search:
+    entries:
+      - ./app/src/base/containers/Search.js
+    transform:
+      - babelify
+
+manifestProcessors:
+    -
+      - mendel-manifest-extract-bundles
+      - external: search
+        from: main
+
+env:
+  production:
+    manifestProcessors:
+      -
+        - mendel-manifest-extract-bundles
+        - external: search
+          from: main
+      -
+        - mendel-manifest-uglify
+    bundles:
+      main:
+        transform:
+          - babelify
+          -
+            - envify
+            - global: true
+              NODE_ENV: production
+      search:
+        transform:
+          - babelify
+          -
+            - envify
+            - global: true
+              NODE_ENV: production
