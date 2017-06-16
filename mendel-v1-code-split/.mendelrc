@@ -10,6 +10,7 @@ bundles:
     require:
       - react
       - react-dom
+      - react-router
       - prop-types
   main:
     entries:
@@ -17,12 +18,23 @@ bundles:
     external:
       - react
       - react-dom
+      - react-router
       - prop-types
+      - ./app/src/base/containers/LazyTwo.js
     transform:
       - babelify
   lazy:
     require:
       - ./app/src/base/containers/Search.js
+    external:
+      - react
+      - react-dom
+      - prop-types
+    transform:
+      - babelify
+  lazytwo:
+    require:
+      - ./app/src/base/containers/LazyTwo.js
     external:
       - react
       - react-dom
@@ -64,6 +76,13 @@ env:
             - global: true
               NODE_ENV: production
       lazy:
+        transform:
+          - babelify
+          -
+            - envify
+            - global: true
+              NODE_ENV: production
+      lazytwo:
         transform:
           - babelify
           -

@@ -4,13 +4,13 @@
   "description": "mendel-v1 example",
   "main": "index.js",
   "scripts": {
-    "babel-server": "babel app/src/server --out-dir app/build",
+    "babel-server": "babel app/src/server --out-dir build",
     "mendel": "mendel -v",
     "build-dev": "npm run babel-server",
     "build": "NODE_ENV=production mendel && npm run babel-server",
-    "development": "nodemon app/build/server.js",
-    "production": "NODE_ENV=production node app/build/server.js",
-    "sw-precache": "sw-precache --root=service-worker-test"
+    "development": "nodemon build/server.js",
+    "production": "NODE_ENV=production node build/server.js",
+    "sw-precache": "sw-precache --root=service-worker-test --dontCacheBustUrlsMatching=/./"
   },
   "dependencies": {
     "babel-plugin-lodash": "^3.2.11",
